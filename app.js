@@ -8,7 +8,8 @@ const app = Vue.createApp({
             playerHealth: 100,
             monsterHealth: 100,
             currentRound: 0,
-            winner: null
+            winner: null,
+            logMsg: []
         }
     },
     computed: {
@@ -34,17 +35,23 @@ const app = Vue.createApp({
     },
     methods: {
         attackMonster() {
-            this.monsterHealth -= getRandom(5, 12);
+            const attackValue = getRandom(5, 12);
+            this.monsterHealth -= attackValue
             this.attackPlayer();
-            this.currentRound++
+            this.currentRound++;
+            this.addLogMessage('player', 'attack', attackValue)
         },
         attackPlayer() {
-            this.playerHealth -= getRandom(8, 20)
+            const attackValue = getRandom(8, 20);
+            this.playerHealth -= attackValue;
+            this.addLogMessage('monster', 'attack', attackValue)
         },
         specialAttack() {
-            this.monsterHealth -= getRandom(10, 25);
+            const attackValue = getRandom(10, 25);
+            this.monsterHealth -= attackValue
             this.attackPlayer();
-            this.currentRound++
+            this.currentRound++;
+            this.addLogMessage('player', 'attack', attackValue)
         },
         healPlayer() {
             const healValue = getRandom(8, 20);
@@ -56,16 +63,25 @@ const app = Vue.createApp({
                 this.playerHealth += healValue
             };
             this.attackPlayer();
-            this.currentRound++
+            this.currentRound++;
+            this.addLogMessage('player', 'heal', healValue)
         },
         startGame() {
             this.playerHealth = 100;
             this.monsterHealth = 100;
             this.winner = null;
-            this.currentRound = 0
+            this.currentRound = 0;
+            this.logMsg = []
         },
         surrender() {
             this.playerHealth = 0
+        },
+        addLogMessage(who, what, value) {
+            this.logMsg.unshift({
+                actionBy: who,
+                actionType: what,
+                actionValue: value
+            })
         }
     },
     watch: {
