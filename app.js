@@ -7,15 +7,26 @@ const app = Vue.createApp({
         return {
             playerHealth: 100,
             monsterHealth: 100,
-            currentRound: 0
+            currentRound: 0,
+            winner: null
         }
     },
     computed: {
         monsterBarStyles() {
-            return {width: this.monsterHealth + '%'}
+            if (this.monsterHealth < 0)
+            {
+                return {width: '0%'}
+            }
+            else {
+            return {width: this.monsterHealth + '%'}}
         },
         playerBarStyles() {
-            return {width: this.playerHealth + '%'}
+            if (this.playerHealth < 0)
+            {
+                return {width: '0%'}
+            }
+            else {
+            return {width: this.playerHealth + '%'}}
         },
         mayUseSpecialAttack() {
             return this.currentRound % 3 !== 0
@@ -34,6 +45,49 @@ const app = Vue.createApp({
             this.monsterHealth -= getRandom(10, 25);
             this.attackPlayer();
             this.currentRound++
+        },
+        healPlayer() {
+            const healValue = getRandom(8, 20);
+            
+            if (this.playerHealth + healValue > 100) {
+                this.playerHealth = 100
+            }
+            else{
+                this.playerHealth += healValue
+            };
+            this.attackPlayer();
+            this.currentRound++
+        },
+        startGame() {
+            this.playerHealth = 100;
+            this.monsterHealth = 100;
+            this.winner = null;
+            this.currentRound = 0
+        },
+        surrender() {
+            this.playerHealth = 0
+        }
+    },
+    watch: {
+        playerHealth(value) {
+            if (value <= 0 && this.monsterHealth <= 0)
+            {
+                this.winner = 'draw'
+            }
+            else if (value <= 0)
+            {
+                this.winner = 'monster'
+            }
+        },
+        monsterHealth(value) {
+            if (value <= 0 && this.playerHealth <= 0)
+            {
+                this.winner = 'draw'
+            }
+            else if (value <= 0)
+            {
+                this.winner = 'player'
+            }
         }
     }
 })
